@@ -1,35 +1,22 @@
-import { defineConfig } from "@rocicorp/zero/config";
-import { Message, schema, type Schema } from "./src/schema.js";
+import {defineAuthorization} from '@rocicorp/zero/config';
+import {Message, schema, type Schema} from './src/schema.js';
 
 // The contents of your decoded JWT.
 type AuthData = {
   sub: string;
 };
 
-export default defineConfig<AuthData, Schema>(schema, (query) => {
+export default defineAuthorization<AuthData, Schema>(schema, query => {
   const allowIfLoggedIn = (authData: AuthData) =>
-    query.user.where("id", "=", authData.sub);
+    query.user.where('id', '=', authData.sub);
 
   const allowIfMessageSender = (authData: AuthData, row: Message) => {
     return query.message
-      .where("id", row.id)
-      .where("senderID", "=", authData.sub);
+      .where('id', row.id)
+      .where('senderID', '=', authData.sub);
   };
 
   return {
-    upstreamDBConnStr: must(process.env.ZSTART_DB),
-    cvrDBConnStr: must(process.env.ZSTART_DB),
-    changeDBConnStr: must(process.env.ZSTART_DB),
-    replicaDBFile: must(process.env.ZSTART_REPLICA_DB_FILE),
-    jwtSecret: must(process.env.JWT_SECRET),
-
-    numSyncWorkers: undefined, // this means numCores - 1
-
-    log: {
-      level: "debug",
-      format: "text",
-    },
-
     authorization: {
       // Nobody can write to the medium or user tables -- they are populated
       // and fixed by seed.sql
@@ -60,10 +47,3 @@ export default defineConfig<AuthData, Schema>(schema, (query) => {
     },
   };
 });
-
-function must(val) {
-  if (!val) {
-    throw new Error("Expected value to be defined");
-  }
-  return val;
-}

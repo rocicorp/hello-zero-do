@@ -9,52 +9,34 @@ import {
   createSchema,
   createTableSchema,
   TableSchemaToRow,
-} from "@rocicorp/zero/schema";
+} from '@rocicorp/zero/schema';
 
 const userSchema = createTableSchema({
-  tableName: "user",
+  tableName: 'user',
   columns: {
-    id: { type: "string" },
-    name: { type: "string" },
-    partner: { type: "boolean" },
+    id: {type: 'string'},
+    name: {type: 'string'},
+    partner: {type: 'boolean'},
   },
-  primaryKey: ["id"],
-  relationships: {},
-});
-
-const mediumSchema = createTableSchema({
-  tableName: "medium",
-  columns: {
-    id: { type: "string" },
-    name: { type: "string" },
-  },
-  primaryKey: ["id"],
+  primaryKey: ['id'],
   relationships: {},
 });
 
 const messageSchema = createTableSchema({
-  tableName: "message",
+  tableName: 'message',
   columns: {
-    id: { type: "string" },
-    senderID: { type: "string" },
-    mediumID: { type: "string" },
-    body: { type: "string" },
-    timestamp: { type: "number" },
+    id: {type: 'string'},
+    senderID: {type: 'string'},
+    body: {type: 'string'},
+    timestamp: {type: 'number'},
   },
-  primaryKey: ["id"],
+  primaryKey: ['id'],
   relationships: {
     sender: {
-      source: "senderID",
+      source: 'senderID',
       dest: {
-        schema: () => userSchema,
-        field: "id",
-      },
-    },
-    medium: {
-      source: "mediumID",
-      dest: {
-        schema: () => mediumSchema,
-        field: "id",
+        schema: userSchema,
+        field: 'id',
       },
     },
   },
@@ -64,12 +46,10 @@ export const schema = createSchema({
   version: 1,
   tables: {
     user: userSchema,
-    medium: mediumSchema,
     message: messageSchema,
   },
 });
 
 export type Schema = typeof schema;
 export type Message = TableSchemaToRow<typeof messageSchema>;
-export type Medium = TableSchemaToRow<typeof mediumSchema>;
 export type User = TableSchemaToRow<typeof schema.tables.user>;

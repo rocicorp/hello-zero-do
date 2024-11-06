@@ -1,24 +1,24 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { getRequestListener } from "@hono/node-server";
-import { app } from "./api/index.js";
+import {getRequestListener} from '@hono/node-server';
+import react from '@vitejs/plugin-react';
+import {defineConfig} from 'vite';
+import {app} from './api/index.js';
 
 export default defineConfig({
   optimizeDeps: {
     esbuildOptions: {
-      target: "es2022",
+      target: 'es2022',
     },
   },
   plugins: [
     react(),
     {
-      name: "api-server",
+      name: 'api-server',
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
-          if (!req.url?.startsWith("/api")) {
+          if (!req.url?.startsWith('/api')) {
             return next();
           }
-          getRequestListener(async (request) => {
+          getRequestListener(async request => {
             return await app.fetch(request, {});
           })(req, res);
         });
