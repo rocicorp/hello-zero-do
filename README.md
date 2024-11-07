@@ -1,50 +1,43 @@
-# React + TypeScript + Vite
+# Zero in a Durable Object
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This runs Zero in a Cloudflare Durable Object. It's a simple example, but it
+proves that it's possible to run Zero in a Durable Object.
 
-Currently, two official plugins are available:
+## Running
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+We need 4 different terminals to run this example!
 
-## Expanding the ESLint configuration
+### 1. Run Posgres
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Start a Postgres database using docker
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+```
+npm run docker-up
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 2. Run Zero Cache
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react';
+Start a Zero cache server
 
-export default tseslint.config({
-  // Set the react version
-  settings: {react: {version: '18.3'}},
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-});
 ```
+npx zero-cache
+```
+
+### 3. Run Web App
+
+This is to add and remove messages to Postgres. This web app uses Zero too.
+
+```
+VITE_PUBLIC_SERVER="http://localhost:4848" npm run dev
+```
+
+Open a browser at http://localhost:5173 to add and remove messages.
+
+### 4. Run Durable Object
+
+```
+npx wrangler dev
+```
+
+Open a browser at http://localhost:8787. This will create the Durable Object
+which creates the Zero client in the DO.
