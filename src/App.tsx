@@ -18,7 +18,9 @@ function App() {
   const all = z.query.message;
   const allMessages = useQuery(all);
 
-  let filtered = all.related('sender', sender => sender.one());
+  let filtered = all
+    .related('sender', sender => sender.one())
+    .orderBy('timestamp', 'desc');
 
   if (filterUser) {
     filtered = filtered.where('senderID', filterUser);
@@ -49,7 +51,7 @@ function App() {
       return false;
     }
     if (action === 'add') {
-      z.mutate.message.create(randomMessage(users));
+      z.mutate.message.insert(randomMessage(users));
       return true;
     } else {
       if (allMessages.length === 0) {

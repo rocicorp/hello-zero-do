@@ -28,7 +28,7 @@ npx zero-cache
 This is to add and remove messages to Postgres. This web app uses Zero too.
 
 ```
-VITE_PUBLIC_SERVER="http://localhost:4848" npm run dev
+npm run dev
 ```
 
 Open a browser at http://localhost:5173 to add and remove messages.
@@ -41,3 +41,5 @@ npx wrangler dev
 
 Open a browser at http://localhost:8787. This will create the Durable Object
 which creates the Zero client in the DO.
+
+Then make changes in the web UI and observe the console output from wrangler.
