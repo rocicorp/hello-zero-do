@@ -24,3 +24,7 @@ dist-ssr
 *.sln
 *.sw?
 .wrangler
+
+# zero
+zero-schema.json
+

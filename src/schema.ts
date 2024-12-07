@@ -8,37 +8,36 @@
 import {
   createSchema,
   createTableSchema,
-  defineAuthorization,
+  definePermissions,
+  ExpressionBuilder,
+  TableSchema,
   TableSchemaToRow,
 } from '@rocicorp/zero';
 
 const userSchema = createTableSchema({
   tableName: 'user',
   columns: {
-    id: {type: 'string'},
-    name: {type: 'string'},
-    partner: {type: 'boolean'},
+    id: 'string',
+    name: 'string',
+    partner: 'boolean',
   },
-  primaryKey: ['id'],
-  relationships: {},
+  primaryKey: 'id',
 });
 
 const messageSchema = createTableSchema({
   tableName: 'message',
   columns: {
-    id: {type: 'string'},
-    senderID: {type: 'string'},
-    body: {type: 'string'},
-    timestamp: {type: 'number'},
+    id: 'string',
+    senderID: 'string',
+    body: 'string',
+    timestamp: 'number',
   },
-  primaryKey: ['id'],
+  primaryKey: 'id',
   relationships: {
     sender: {
-      source: 'senderID',
-      dest: {
-        schema: userSchema,
-        field: 'id',
-      },
+      sourceField: 'senderID',
+      destSchema: userSchema,
+      destField: 'id',
     },
   },
 });
@@ -60,45 +59,56 @@ export type Schema = typeof schema;
 export type Message = TableSchemaToRow<typeof messageSchema>;
 export type User = TableSchemaToRow<typeof userSchema>;
 
-export const authorization = defineAuthorization<AuthData, Schema>(
+export const permissions = definePermissions<AuthData, Schema>(schema, () => {
+  const allowIfLoggedIn = (
+    authData: AuthData,
+    {cmpLit}: ExpressionBuilder<TableSchema>,
+  ) => cmpLit(authData.sub, 'IS NOT', null);
+
+  const allowIfMessageSender = (
+    authData: AuthData,
+    {cmp}: ExpressionBuilder<typeof messageSchema>,
+  ) => {
+    return cmp('senderID', '=', authData.sub);
+  };
+
+  return {
+    // Nobody can write to the medium or user tables -- they are populated
+    // and fixed by seed.sql
+    medium: {
+      row: {
+        insert: [],
+        update: {
+          preMutation: [],
+        },
+        delete: [],
+      },
+    },
+    user: {
+      row: {
+        insert: [],
+        update: {
+          preMutation: [],
+        },
+        delete: [],
+      },
+    },
+    message: {
+      row: {
+        // anyone can insert
+        insert: undefined,
+        // only sender can edit their own messages
+        update: {
+          preMutation: [allowIfMessageSender],
+        },
+        // must be logged in to delete
+        delete: [allowIfLoggedIn],
+      },
+    },
+  };
+});
+
+export default {
   schema,
-  query => {
-    const allowIfLoggedIn = (authData: AuthData) =>
-      query.user.where('id', '=', authData.sub);
-
-    const allowIfMessageSender = (authData: AuthData, row: Message) => {
-      return query.message
-        .where('id', row.id)
-        .where('senderID', '=', authData.sub);
-    };
-
-    return {
-      // Nobody can write to the medium or user tables -- they are populated
-      // and fixed by seed.sql
-      medium: {
-        row: {
-          insert: [],
-          update: [],
-          delete: [],
-        },
-      },
-      user: {
-        row: {
-          insert: [],
-          update: [],
-          delete: [],
-        },
-      },
-      message: {
-        row: {
-          // anyone can insert
-          insert: undefined,
-          // only sender can edit their own messages
-          update: [allowIfMessageSender],
-          // must be logged in to delete
-          delete: [allowIfLoggedIn],
-        },
-      },
-    };
-  },
-);
+  permissions,
+};

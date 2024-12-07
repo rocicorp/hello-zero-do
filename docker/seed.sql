@@ -1,18 +1,14 @@
-DROP TABLE IF EXISTS "user", "message";
-
 CREATE DATABASE zstart_do;
 CREATE DATABASE zstart_do_cvr;
 CREATE DATABASE zstart_do_cdb;
 
 \c zstart_do;
 
-
 CREATE TABLE "user" (
   "id" VARCHAR PRIMARY KEY,
   "name" VARCHAR NOT NULL,
   "partner" BOOLEAN NOT NULL
 );
-
 
 CREATE TABLE "message" (
   "id" VARCHAR PRIMARY KEY,
