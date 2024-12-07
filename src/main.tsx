@@ -14,7 +14,7 @@ const userID = decodedJWT?.sub ? (decodedJWT.sub as string) : 'anon';
 
 const z = new Zero({
   userID,
-  auth: encodedJWT,
+  auth: () => encodedJWT,
   server: import.meta.env.VITE_PUBLIC_SERVER,
   schema,
   // This is often easier to develop with if you're frequently changing
