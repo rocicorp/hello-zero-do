@@ -10,13 +10,13 @@ import {useInterval} from './use-interval';
 
 function App() {
   const z = useZero<Schema>();
-  const users = useQuery(z.query.user);
+  const [users] = useQuery(z.query.user);
 
   const [filterUser, setFilterUser] = useState<string>('');
   const [filterText, setFilterText] = useState<string>('');
 
   const all = z.query.message;
-  const allMessages = useQuery(all);
+  const [allMessages] = useQuery(all);
 
   let filtered = all
     .related('sender', sender => sender.one())
@@ -32,7 +32,7 @@ function App() {
 
   filtered = filtered.orderBy('timestamp', 'desc');
 
-  const filteredMessages = useQuery(filtered);
+  const [filteredMessages] = useQuery(filtered);
 
   const hasFilters = filterUser || filterText;
   const [action, setAction] = useState<'add' | 'remove' | undefined>(undefined);
