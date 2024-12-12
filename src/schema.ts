@@ -11,7 +11,9 @@ import {
   definePermissions,
   ExpressionBuilder,
   TableSchema,
-  TableSchemaToRow,
+  Row,
+  NOBODY_CAN,
+  ANYONE_CAN,
 } from '@rocicorp/zero';
 
 const userSchema = createTableSchema({
@@ -56,8 +58,8 @@ type AuthData = {
 };
 
 export type Schema = typeof schema;
-export type Message = TableSchemaToRow<typeof messageSchema>;
-export type User = TableSchemaToRow<typeof userSchema>;
+export type Message = Row<typeof messageSchema>;
+export type User = Row<typeof userSchema>;
 
 export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   const allowIfLoggedIn = (
@@ -73,30 +75,27 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   };
 
   return {
-    // Nobody can write to the medium or user tables -- they are populated
-    // and fixed by seed.sql
     medium: {
       row: {
-        insert: [],
+        insert: NOBODY_CAN,
         update: {
-          preMutation: [],
+          preMutation: NOBODY_CAN,
         },
-        delete: [],
+        delete: NOBODY_CAN,
       },
     },
     user: {
       row: {
-        insert: [],
+        insert: NOBODY_CAN,
         update: {
-          preMutation: [],
+          preMutation: NOBODY_CAN,
         },
-        delete: [],
+        delete: NOBODY_CAN,
       },
     },
     message: {
       row: {
-        // anyone can insert
-        insert: undefined,
+        insert: ANYONE_CAN,
         // only sender can edit their own messages
         update: {
           preMutation: [allowIfMessageSender],

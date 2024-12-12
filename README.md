@@ -12,7 +12,7 @@ We need 4 different terminals to run this example!
 Start a Postgres database using docker
 
 ```
-npm run docker-up
+npm run dev:db-up
 ```
 
 ### 2. Run Zero Cache
@@ -20,7 +20,7 @@ npm run docker-up
 Start a Zero cache server
 
 ```
-npx zero-cache
+npm run dev:zero-cache
 ```
 
 ### 3. Run Web App
@@ -28,7 +28,7 @@ npx zero-cache
 This is to add and remove messages to Postgres. This web app uses Zero too.
 
 ```
-npm run dev
+npm run dev:ui
 ```
 
 Open a browser at http://localhost:5173 to add and remove messages.
