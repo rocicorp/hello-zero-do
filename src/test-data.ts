@@ -21,7 +21,7 @@ const replies = [
   "I could send you a tarball, but it won't work",
 ];
 
-export function randomMessage(users: User[]): Message {
+export function randomMessage(users: readonly User[]): Message {
   const id = randID();
   const timestamp = randBetween(1727395200000, new Date().getTime());
   const isRequest = randInt(10) <= 6;
