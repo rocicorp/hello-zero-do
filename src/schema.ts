@@ -7,49 +7,46 @@
 
 import {
   createSchema,
-  createTableSchema,
   definePermissions,
   ExpressionBuilder,
-  TableSchema,
   Row,
   NOBODY_CAN,
   ANYONE_CAN,
+  table,
+  string,
+  boolean,
+  number,
+  relationships,
 } from '@rocicorp/zero';
 
-const userSchema = createTableSchema({
-  tableName: 'user',
-  columns: {
-    id: 'string',
-    name: 'string',
-    partner: 'boolean',
-  },
-  primaryKey: 'id',
-});
+const user = table('user')
+  .columns({
+    id: string(),
+    name: string(),
+    partner: boolean(),
+  })
+  .primaryKey('id');
 
-const messageSchema = createTableSchema({
-  tableName: 'message',
-  columns: {
-    id: 'string',
-    senderID: 'string',
-    body: 'string',
-    timestamp: 'number',
-  },
-  primaryKey: 'id',
-  relationships: {
-    sender: {
-      sourceField: 'senderID',
-      destSchema: userSchema,
-      destField: 'id',
-    },
-  },
-});
+const message = table('message')
+  .columns({
+    id: string(),
+    senderID: string(),
+    body: string(),
+    timestamp: number(),
+  })
+  .primaryKey('id');
 
-export const schema = createSchema({
-  version: 1,
-  tables: {
-    user: userSchema,
-    message: messageSchema,
-  },
+const messageRelationships = relationships(message, ({one}) => ({
+  sender: one({
+    sourceField: ['senderID'],
+    destSchema: user,
+    destField: ['id'],
+  }),
+}));
+
+export const schema = createSchema(1, {
+  tables: [user, message],
+  relationships: [messageRelationships],
 });
 
 // The contents of your decoded JWT.
@@ -58,18 +55,18 @@ type AuthData = {
 };
 
 export type Schema = typeof schema;
-export type Message = Row<typeof messageSchema>;
-export type User = Row<typeof userSchema>;
+export type Message = Row<typeof schema.tables.message>;
+export type User = Row<typeof schema.tables.user>;
 
 export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   const allowIfLoggedIn = (
     authData: AuthData,
-    {cmpLit}: ExpressionBuilder<TableSchema>,
+    {cmpLit}: ExpressionBuilder<Schema, keyof Schema['tables']>,
   ) => cmpLit(authData.sub, 'IS NOT', null);
 
   const allowIfMessageSender = (
     authData: AuthData,
-    {cmp}: ExpressionBuilder<typeof messageSchema>,
+    {cmp}: ExpressionBuilder<Schema, 'message'>,
   ) => {
     return cmp('senderID', '=', authData.sub);
   };
