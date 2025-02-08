@@ -30,7 +30,7 @@ const user = table('user')
 const message = table('message')
   .columns({
     id: string(),
-    senderID: string(),
+    senderID: string().from('sender_id'),
     body: string(),
     timestamp: number(),
   })
@@ -72,15 +72,6 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   };
 
   return {
-    medium: {
-      row: {
-        insert: NOBODY_CAN,
-        update: {
-          preMutation: NOBODY_CAN,
-        },
-        delete: NOBODY_CAN,
-      },
-    },
     user: {
       row: {
         insert: NOBODY_CAN,

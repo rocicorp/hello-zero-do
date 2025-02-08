@@ -12,7 +12,7 @@ CREATE TABLE "user" (
 
 CREATE TABLE "message" (
   "id" VARCHAR PRIMARY KEY,
-  "senderID" VARCHAR REFERENCES "user"(id),
+  "sender_id" VARCHAR REFERENCES "user"(id),
   "body" VARCHAR NOT NULL,
   "timestamp" TIMESTAMP not null
 );
