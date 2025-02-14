@@ -74,22 +74,21 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   return {
     user: {
       row: {
-        insert: NOBODY_CAN,
-        update: {
-          preMutation: NOBODY_CAN,
-        },
-        delete: NOBODY_CAN,
+        select: ANYONE_CAN,
       },
     },
     message: {
       row: {
         insert: ANYONE_CAN,
-        // only sender can edit their own messages
         update: {
+          // only sender can edit their own messages
           preMutation: [allowIfMessageSender],
+          // user can only set messages being from self
+          postMutation: [allowIfMessageSender],
         },
         // must be logged in to delete
         delete: [allowIfLoggedIn],
+        select: ANYONE_CAN,
       },
     },
   };
