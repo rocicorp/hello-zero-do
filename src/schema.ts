@@ -10,13 +10,13 @@ import {
   definePermissions,
   ExpressionBuilder,
   Row,
-  NOBODY_CAN,
   ANYONE_CAN,
   table,
   string,
   boolean,
   number,
   relationships,
+  PermissionsConfig,
 } from '@rocicorp/zero';
 
 const user = table('user')
@@ -91,7 +91,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
         select: ANYONE_CAN,
       },
     },
-  };
+  } satisfies PermissionsConfig<AuthData, Schema>;
 });
 
 export default {
