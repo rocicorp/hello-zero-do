@@ -3,6 +3,12 @@
 This runs Zero in a Cloudflare Durable Object. It's a simple example, but it
 proves that it's possible to run Zero in a Durable Object.
 
+# Why run Zero in DO?
+
+This sample was written for a Zero user who was running collaboration sessions in DOs. Sometimes they needed to force shut down these DOs. It would be unreliable to send every DO a message telling it to shut down. But if they wrote the state into a DB and instead synced that state, it would be perfectly reliable. The DO would just monitor what state it is supposed to be in and shut itself down when necessary.
+
+More generally any time a DO needs some subset of PG data, it could be useful to have a live-updated, consistent view of it rather than having to query.
+
 ## Running
 
 We need 4 different terminals to run this example!
