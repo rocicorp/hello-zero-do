@@ -10,13 +10,13 @@ import {useInterval} from './use-interval';
 
 function App() {
   const z = useZero<Schema>();
-  const [users] = useQuery(z.query.user, {ttl: 'forever'});
+  const [users] = useQuery(z.query.user);
 
   const [filterUser, setFilterUser] = useState<string>('');
   const [filterText, setFilterText] = useState<string>('');
 
   const all = z.query.message;
-  const [allMessages] = useQuery(all, {ttl: 'forever'});
+  const [allMessages] = useQuery(all);
 
   let filtered = all
     .related('sender', sender => sender.one())
